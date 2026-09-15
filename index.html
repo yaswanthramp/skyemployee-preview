@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+  skyEmployee wireframe, built on the Radix-Design System canonical shell.
+  Source files: data.js (sample data), core.js (shell, router, overlays),
+  views-*.js (screens), app.css (project extensions). Shell structure is the
+  DS template: banner row, header, sidebar, content with breadcrumbs + footer.
+-->
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>skyEmployee · UX wireframe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./dashboard.css" />
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- ============ ANNOUNCEMENT BANNER ============ -->
+    <div class="app-banner" id="demoBanner">
+      <span class="ab-icon" data-ic="info"></span>
+      <span>UX wireframe with sample data. Use <b>View as</b> to switch roles, and <b>Phone</b> to preview the mobile layout.</span>
+      <span class="ab-spacer"></span>
+      <button class="ab-close" aria-label="Dismiss" data-act="dismiss-banner"><span data-ic="x"></span></button>
+    </div>
+
+    <!-- ============ HEADER ============ -->
+    <header class="app-header">
+      <div class="brand">
+        <button class="icon-btn mobile-only" aria-label="Open menu" data-act="open-nav"><span data-ic="panel-left"></span></button>
+        <a class="brand-link" href="#/home" aria-label="skyEmployee home">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="var(--accent-9)"/><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-contrast)">S</text></svg>
+          <span>skyEmployee</span>
+        </a>
+        <span class="brand-org desktop-only" id="brandOrg"></span>
+      </div>
+      <div class="search header-search desktop-only" id="globalSearch">
+        <span class="search-icon" data-ic="search"></span>
+        <input class="input" id="globalSearchInput" placeholder="Search people, posts and resources" autocomplete="off" aria-label="Search people, posts and resources" />
+        <div class="popover search-pop" id="searchPop" hidden></div>
+      </div>
+      <div class="header-right">
+        <span class="pop-anchor">
+          <button class="dropdown role-switch" id="roleBtn" aria-haspopup="menu" aria-expanded="false" data-act="toggle-pop" data-pop="rolePop">
+            <span class="rs-label desktop-only">View as</span>
+            <span class="rs-value" id="roleValue">Employee</span>
+            <span class="dropdown-chevron" data-ic="chevrons-up-down"></span>
+          </button>
+          <div class="dropdown-menu pop role-menu" id="rolePop" role="menu" hidden></div>
+        </span>
+        <button class="icon-btn desktop-only" aria-label="Phone preview" title="Phone preview" data-act="phone-preview" id="phoneBtn"><span data-ic="smartphone"></span></button>
+        <button class="icon-btn mobile-only" aria-label="Search" data-act="mobile-search"><span data-ic="search"></span></button>
+        <span class="pop-anchor">
+          <button class="icon-btn" aria-label="Notifications" data-act="toggle-pop" data-pop="notifPop"><span data-ic="bell"></span><span class="ic-badge" id="notifCount">3</span></button>
+          <div class="popover pop notif-pop" id="notifPop" hidden></div>
+        </span>
+        <button class="icon-btn desktop-only" aria-label="Toggle theme" data-act="theme"><span data-ic="moon"></span></button>
+        <span class="divider-v desktop-only"></span>
+        <span class="pop-anchor">
+          <button class="profile-btn" aria-expanded="false" data-act="toggle-pop" data-pop="profilePop" id="profileBtn"></button>
+          <div class="popover profile-menu pop" id="profilePop" hidden></div>
+        </span>
+      </div>
+    </header>
+
+    <!-- ============ SIDEBAR ============ -->
+    <nav class="app-sidebar" aria-label="Primary" id="sidebar"></nav>
+    <div class="nav-scrim" id="navScrim" hidden data-act="close-nav"></div>
+
+    <!-- ============ CONTENT ============ -->
+    <main class="app-content" id="content"></main>
+
+    <!-- ============ MOBILE BOTTOM BAR ============ -->
+    <nav class="bottom-nav" aria-label="Mobile" id="bottomNav"></nav>
+  </div>
+
+  <div id="overlayHost"></div>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+  <script src="./icons.js"></script>
+  <script src="./data.js"></script>
+  <script src="./core.js"></script>
+  <script src="./views-home.js"></script>
+  <script src="./views-people.js"></script>
+  <script src="./views-rewards.js"></script>
+  <script src="./views-info.js"></script>
+  <script src="./views-admin.js"></script>
+  <script>APP.start();</script>
+</body>
+</html>
