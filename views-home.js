@@ -489,19 +489,6 @@
   /* ---------- home view ---------- */
   S.aroundTab = 'shoutouts';
   function myWhosOn() { var me = APP.me(); return me.loc === 'Maple Grove' ? D.WHOS_ON : D.WHOS_ON_OTHER[me.loc] || []; }
-  /* "Today": the two things a frontline worker opens the app for, side by side at the top. */
-  function todayCard() {
-    var me = APP.me(), due = APP.dueItems(), shift = myShifts()[0], next = myShifts()[1], list = myWhosOn();
-    var keys = list.filter(function (w) { return w.key && w.p !== me.id; }).slice(0, 2);
-    var left = '<div class="today-shift"><span class="today-label">' + ic('calendar-days', 14) + 'Your shift today</span>' +
-      (S.widget === 'empty' ? '<div class="today-time">Day off</div><div class="today-sub">No shift scheduled today</div>'
-        : '<div class="today-time">' + shift.time + '</div><div class="today-sub">' + esc(shift.where) + (next ? ' · Next: ' + next.d : '') + '</div>') +
-      (keys.length ? '<div class="today-keys">' + keys.map(function (w) { var p = P(w.p); return '<button class="today-key" data-act="profile" data-id="' + p.id + '">' + av(p, 28) + '<span class="pl-text"><span class="pl-sub">' + esc(w.key) + '</span><span class="pl-name">' + esc(p.name) + '</span></span></button>'; }).join('') + '</div>' : '') +
-      '<a class="link today-link" href="#/directory/whos-on">' + ic('users', 14) + list.length + ' on shift at ' + esc(me.loc) + ic('chevron-right', 14) + '</a></div>';
-    var right = '<div class="today-due"><div class="today-due-head"><span class="today-label">' + ic('list-checks', 14) + 'Due next</span>' + (due.length ? '<a class="link t-1" href="#/me/due">See all ' + due.length + '</a>' : '') + '</div>' +
-      (due.length ? '<div class="due-list">' + due.slice(0, 3).map(APP.dueRow).join('') + '</div>' : '<div class="w-empty">' + ic('circle-check', 22) + '<div class="fw-medium">Nothing due</div><div class="t-1 text-low">You are all caught up.</div></div>') + '</div>';
-    return '<section class="card today" aria-label="Today">' + left + right + '</section>';
-  }
   function aroundCard() {
     var me = APP.me(), tab = S.aroundTab, body;
     if (tab === 'coming') body = '<div class="who-list">' + D.MILESTONES.map(function (m) { var p = P(m.p);
@@ -533,7 +520,7 @@
       '<div class="composer-quick">' + btn('Photo', 'btn-ghost', 'image', 'data-act="compose"', 'is-sm') + btn('Shout-out', 'btn-ghost', 'award', 'data-act="compose" data-type="Shout-out"', 'is-sm') +
       (APP.canManage() ? btn('Poll', 'btn-ghost', 'vote', 'data-act="compose" data-type="Poll"', 'is-sm') + btn('Announcement', 'btn-ghost', 'megaphone', 'data-act="compose" data-type="Announcement"', 'is-sm') : '') + '</div></section>';
     var filters = '<div class="feed-filters toggle-group" role="toolbar" aria-label="Filter the feed">' + FILTERS.map(function (f) { return '<button class="toggle' + (S.feed === f ? ' is-on' : '') + '" aria-pressed="' + (S.feed === f) + '" data-act="feed-filter" data-f="' + f + '">' + f + '</button>'; }).join('') + '</div>';
-    var body = bannerHtml() + todayCard() + appsHtml() + widgetsHtml() +
+    var body = bannerHtml() + appsHtml() + widgetsHtml() +
       '<div class="home-grid">' +
       '<div class="home-feed"><div class="feed-head"><h2 class="t-5 fw-bold">Community feed</h2>' + (APP.canManage() ? '<a class="link t-1" href="#/manage/content/moderation">' + ic('flag', 14) + ' ' + D.REPORTS.filter(function (x) { return APP.inScope(x.loc) && !x.done; }).length + ' reported</a>' : '') + '</div>' + composer + filters + '<div id="feedList" class="feed-list">' + feedListHtml() + '</div></div>' +
       '<aside class="home-rail">' + whoCard() + aroundCard() + '</aside></div>';
