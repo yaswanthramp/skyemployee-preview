@@ -533,7 +533,7 @@
       '<div class="composer-quick">' + btn('Photo', 'btn-ghost', 'image', 'data-act="compose"', 'is-sm') + btn('Shout-out', 'btn-ghost', 'award', 'data-act="compose" data-type="Shout-out"', 'is-sm') +
       (APP.canManage() ? btn('Poll', 'btn-ghost', 'vote', 'data-act="compose" data-type="Poll"', 'is-sm') + btn('Announcement', 'btn-ghost', 'megaphone', 'data-act="compose" data-type="Announcement"', 'is-sm') : '') + '</div></section>';
     var filters = '<div class="feed-filters toggle-group" role="toolbar" aria-label="Filter the feed">' + FILTERS.map(function (f) { return '<button class="toggle' + (S.feed === f ? ' is-on' : '') + '" aria-pressed="' + (S.feed === f) + '" data-act="feed-filter" data-f="' + f + '">' + f + '</button>'; }).join('') + '</div>';
-    var body = todayCard() + bannerHtml() + appsHtml() + widgetsHtml() +
+    var body = bannerHtml() + todayCard() + appsHtml() + widgetsHtml() +
       '<div class="home-grid">' +
       '<div class="home-feed"><div class="feed-head"><h2 class="t-5 fw-bold">Community feed</h2>' + (APP.canManage() ? '<a class="link t-1" href="#/manage/content/moderation">' + ic('flag', 14) + ' ' + D.REPORTS.filter(function (x) { return APP.inScope(x.loc) && !x.done; }).length + ' reported</a>' : '') + '</div>' + composer + filters + '<div id="feedList" class="feed-list">' + feedListHtml() + '</div></div>' +
       '<aside class="home-rail">' + whoCard() + aroundCard() + '</aside></div>';
