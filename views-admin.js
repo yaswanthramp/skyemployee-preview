@@ -1,7 +1,7 @@
 /* skyEmployee wireframe: Manage (Controller, own scope) and Administration (Admin).
    Controllers reach Content, Survey results and Acknowledgements for their
    locations. Admins get everything plus users, gift cards, recognition,
-   the resource library, Pay & Benefits content and settings. */
+   the resource library and settings. */
 (function () {
   var D = SE, A = APP.ACT, S = APP.S, ic = APP.ic, esc = APP.esc, P = APP.P, av = APP.av, badge = APP.badge, btn = APP.btn, money = APP.money, table = APP.table;
   function crumbsFor(section, label, tabLabel, href) { return [['Home', '#/home'], [section, href], [tabLabel || label]]; }
@@ -238,7 +238,7 @@
 
   /* ======================= USERS & ORGANISATION ======================= */
   APP.VIEWS.admin = function (r) {
-    var fn = { users: usersView, giftcards: giftView, recognition: recogView, resources: resAdminView, pay: payAdminView, settings: settingsView }[r[1]];
+    var fn = { users: usersView, giftcards: giftView, recognition: recogView, resources: resAdminView, settings: settingsView }[r[1]];
     return fn ? fn(r[2]) : usersView();
   };
   function usersView(tab) {
@@ -469,27 +469,6 @@
       footer: btn('Cancel', 'btn-soft', null, 'data-act="close-overlay"') + btn('Publish', 'btn-solid', null, 'data-act="noop-toast" data-t="Resource published"') });
   };
   ['reCat', 'reOwner', 'reReview', 'reAud', 'raCatX'].forEach(function (k) { APP.DD[k] = function (v) { var t = document.querySelector('[data-pop="dd-' + k + '"] .dd-value'); if (t) t.textContent = v; }; });
-
-  /* ======================= PAY & BENEFITS CONTENT ======================= */
-  function payAdminView(tab) {
-    tab = tab || 'calendar';
-    var items = [['calendar', 'Pay calendar', '#/admin/pay'], ['rules', 'Pay rules', '#/admin/pay/rules'], ['benefits', 'Benefits', '#/admin/pay/benefits'], ['faq', 'FAQ', '#/admin/pay/faq', D.FAQ.length]], body;
-    var targ = function (t) { return badge(t, 'is-neutral', t === 'Everyone' ? 'globe' : 'map-pin'); };
-    if (tab === 'calendar') body = toolbar(null, APP.dd('paYear', ['2026', '2027'], S.f.paYear || '2026') + btn('Import from payroll', 'btn-surface', 'upload', 'data-act="noop-toast" data-t="Imported 26 pay periods" data-k="info"'), btn('Add pay period', 'btn-solid', 'plus', 'data-act="noop-toast" data-t="Pay period added"')) +
-      table(['Pay period', 'Pay date', 'Applies to', ''], D.PAY_PERIODS.map(function (p, i) { return [p[0], p[1], targ('Everyone'), btn('Edit', 'btn-ghost', 'pencil', 'data-act="noop-toast" data-t="Edit pay period" data-k="info"', 'is-sm')]; }));
-    else if (tab === 'rules') body = toolbar(null, '', btn('New section', 'btn-solid', 'plus', 'data-act="noop-toast" data-t="Section added"')) + table(['Section', 'Applies to', 'Last edited', ''], [['Shift differentials', 'Frontline', 'Sep 1 by Daniel Okafor'], ['Overtime', 'Everyone', 'Aug 12 by Daniel Okafor'], ['Holiday pay', 'Everyone', 'Jan 5 by Sam Oyelaran'], ['Meal and rest breaks', 'Everyone', 'Mar 3 by Daniel Okafor'], ['On-call pay', 'Nursing', 'Jun 20 by Daniel Okafor'], ['Differentials: Cedar Hills (different state rules)', 'Cedar Hills', 'Jul 9 by Daniel Okafor']].map(function (r) { return ['<span class="cell-strong">' + r[0] + '</span>', targ(r[1]), r[2], btn('Edit', 'btn-surface', 'pencil', 'data-act="noop-toast" data-t="Opens the editor" data-k="info"', 'is-sm')]; }));
-    else if (tab === 'benefits') body = toolbar(null, '', btn('Add plan', 'btn-solid', 'plus', 'data-act="noop-toast" data-t="Plan added"')) + '<section class="card stack-4">' + APP.panelHead('Enrolment window') + '<div class="form-grid">' + APP.field('Opens', APP.dd('enOpen', ['Oct 1, 2026'], 'Oct 1, 2026', 'dd-block')) + APP.field('Closes', APP.dd('enClose', ['Oct 31, 2026'], 'Oct 31, 2026', 'dd-block')) + '</div></section>' +
-      table(['Plan', 'Provider link', 'Summary document', 'Applies to', ''], [['Medical', 'Benefits provider portal', 'medical-2027.pdf'], ['Dental', 'Benefits provider portal', 'dental-2027.pdf'], ['Vision', 'Benefits provider portal', 'vision-2027.pdf'], ['401(k) retirement', 'Retirement provider', '401k-summary.pdf'], ['Employee assistance', 'EAP line', 'eap.pdf'], ['Life and disability', 'Benefits provider portal', 'life.pdf']].map(function (r) { return ['<span class="cell-strong">' + r[0] + '</span>', r[1], '<span class="mono">' + r[2] + '</span>', targ('Everyone'), btn('Edit', 'btn-surface', 'pencil', 'data-act="noop-toast" data-t="Opens the editor" data-k="info"', 'is-sm')]; }));
-    else body = toolbar('Search questions', '', btn('Add question', 'btn-solid', 'plus', 'data-act="faq-add"')) + table(['Question', 'Applies to', 'Views this month', ''], D.FAQ.map(function (f, i) { return ['<span class="cell-strong">' + esc(f.q) + '</span><span class="cell-sub">' + esc(f.a.slice(0, 80)) + '...</span>', targ(i === 2 ? 'Frontline' : 'Everyone'), [412, 380, 290, 260, 244, 120, 98, 61][i], btn('Edit', 'btn-surface', 'pencil', 'data-act="faq-add" data-i="' + i + '"', 'is-sm')]; }));
-    return APP.page({ crumbs: crumbsFor('Administration', 'Pay & Benefits content', items.filter(function (i) { return i[0] === tab; })[0][1], '#/admin/pay'), title: 'Pay & Benefits content', desc: 'Keep the pay calendar, pay rules, benefits and FAQ accurate. Target content where rules differ by community or state.', tabs: APP.tabs(items, tab), body: body });
-  }
-  A['faq-add'] = function (el) {
-    var f = el.getAttribute('data-i') != null ? D.FAQ[+el.getAttribute('data-i')] : { q: '', a: '' };
-    APP.dialog({ title: f.q ? 'Edit question' : 'Add a question', body: '<div class="stack-4">' + APP.field('Question', '<input class="input" id="faqQ" value="' + esc(f.q) + '">', 'Write it the way staff would ask it.', true) + APP.field('Answer', '<textarea class="textarea tall" id="faqA">' + esc(f.a) + '</textarea>', 'Plain language. Link to the payroll portal rather than quoting amounts.', true) + APP.field('Applies to', APP.dd('faqAud', ['Everyone', 'Frontline', 'Office', 'Maple Grove', 'Cedar Hills'], 'Everyone', 'dd-block')) + '</div>',
-      footer: btn('Cancel', 'btn-soft', null, 'data-act="close-overlay"') + btn('Save', 'btn-solid', null, 'data-act="faq-save" data-i="' + (el.getAttribute('data-i') || '') + '"') });
-  };
-  APP.DD.faqAud = function (v) { var t = document.querySelector('[data-pop="dd-faqAud"] .dd-value'); if (t) t.textContent = v; };
-  A['faq-save'] = function (el) { var q = document.getElementById('faqQ').value.trim(), a = document.getElementById('faqA').value.trim(); if (!q || !a) { APP.toast('Add a question and an answer', '', 'warning'); return; } var i = el.getAttribute('data-i'); if (i) { D.FAQ[+i].q = q; D.FAQ[+i].a = a; } else D.FAQ.push({ q: q, a: a }); APP.closeOverlay(); APP.rerender(); APP.toast('FAQ saved', 'Staff can find it in Pay & Benefits now.'); };
 
   /* ======================= SETTINGS ======================= */
   function settingsView(tab) {

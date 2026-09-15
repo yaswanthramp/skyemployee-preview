@@ -518,7 +518,7 @@
       '<div class="home-feed"><div class="feed-head"><h2 class="t-5 fw-bold">Community feed</h2>' + (APP.canManage() ? '<a class="link t-1" href="#/manage/content/moderation">' + ic('flag', 14) + ' ' + D.REPORTS.filter(function (x) { return APP.inScope(x.loc); }).length + ' reported</a>' : '') + '</div>' + composer + filters + '<div id="feedList" class="feed-list">' + feedListHtml() + '</div></div>' +
       '<aside class="home-rail">' + rail.rest + '</aside></div>';
     return APP.page({ crumbs: [['Home']], title: greet + ', ' + esc(me.name.split(' ')[0]),
-      desc: 'Tuesday 15 September · ' + esc(me.loc) + (due.length ? ' · <a class="link" href="#/me/due">' + due.length + ' things due</a>' : '') + ' · <a class="link" href="#/pay">Payday Fri 18 Sep</a>',
+      desc: 'Tuesday 15 September · ' + esc(me.loc) + (due.length ? ' · <a class="link" href="#/me/due">' + due.length + ' things due</a>' : ''),
       action: btn('Send an e-card', 'btn-surface', 'mail', 'data-act="send-ecard"') + btn('Give a shout-out', 'btn-soft', 'award', 'data-act="compose" data-type="Shout-out"'), body: body });
   };
   APP.AFTER.push(function (r) {

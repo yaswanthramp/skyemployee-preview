@@ -103,18 +103,18 @@
   APP.inScope = function (loc) { return APP.isAdmin() || loc === 'All' || loc === 'Everyone' || APP.scope().indexOf(loc) >= 0; };
 
   function nav() {
-    var n = [{ items: [['home', 'Home', 'house'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['pay', 'Pay & Benefits', 'wallet'], ['resources', 'Resources', 'library']] }];
+    var n = [{ items: [['home', 'Home', 'house'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library']] }];
     if (APP.isCtrl()) n.push({ label: 'Manage · ' + APP.scope()[0], items: [['manage/content', 'Content', 'megaphone'], ['manage/surveys', 'Survey results', 'chart-column'], ['manage/acks', 'Acknowledgements', 'file-check']] });
-    if (APP.isAdmin()) n.push({ label: 'Administration', items: [['manage/content', 'Content', 'megaphone'], ['manage/surveys', 'Surveys', 'clipboard-list'], ['admin/users', 'Users & organisation', 'user-round-cog'], ['admin/giftcards', 'Gift cards', 'credit-card'], ['admin/recognition', 'Recognition', 'award'], ['admin/resources', 'Resource library', 'folder'], ['admin/pay', 'Pay & Benefits content', 'receipt'], ['admin/settings', 'Settings', 'settings']] });
+    if (APP.isAdmin()) n.push({ label: 'Administration', items: [['manage/content', 'Content', 'megaphone'], ['manage/surveys', 'Surveys', 'clipboard-list'], ['admin/users', 'Users & organisation', 'user-round-cog'], ['admin/giftcards', 'Gift cards', 'credit-card'], ['admin/recognition', 'Recognition', 'award'], ['admin/resources', 'Resource library', 'folder'], ['admin/settings', 'Settings', 'settings']] });
     return n;
   }
   function allowed(r0, r1) {
-    if (['home', 'directory', 'rewards', 'pay', 'resources', 'me'].indexOf(r0) >= 0) {
+    if (['home', 'directory', 'rewards', 'resources', 'me'].indexOf(r0) >= 0) {
       if (r0 === 'rewards' && (r1 === 'give' || r1 === 'fulfilment')) return APP.canManage();
       return true;
     }
     if (r0 === 'manage') return r1 === 'acks' ? APP.canManage() : APP.canManage();
-    if (r0 === 'admin') return APP.isAdmin();
+    if (r0 === 'admin') return APP.isAdmin() && ['users', 'giftcards', 'recognition', 'resources', 'settings'].indexOf(r1) >= 0;
     return false;
   }
 
@@ -135,7 +135,6 @@
       '<a class="pm-item" href="#/me/awards"><span>Awards received</span>' + ic('award', 16) + '</a>' +
       '<a class="pm-item" href="#/me/due"><span>My due items</span>' + ic('list-checks', 16) + '</a>' +
       '<a class="pm-item" href="#/me/notifications"><span>Notification settings</span>' + ic('bell', 16) + '</a>' +
-      '<a class="pm-item mobile-only" href="#/pay"><span>Pay & Benefits</span>' + ic('wallet', 16) + '</a>' +
       '<button class="pm-item" data-act="theme"><span>Dark theme</span>' + ic('moon', 16) + '</button>' +
       '<hr class="divider">' +
       '<div class="pm-field"><span class="pm-field-label">Widget preview state</span><div class="segmented seg-sm">' + [['normal', 'Normal'], ['empty', 'Empty'], ['down', 'App down']].map(function (w) {
@@ -168,7 +167,7 @@
     document.getElementById('sidebar').innerHTML = html;
     var bn = [['home', 'Home', 'house'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library'], ['me', 'Me', 'circle-user-round']];
     document.getElementById('bottomNav').innerHTML = bn.map(function (b) {
-      var a = cur0 === b[0] || (b[0] === 'me' && cur0 === 'pay');
+      var a = cur0 === b[0];
       return '<a class="bn-item' + (a ? ' is-active' : '') + '" href="#/' + b[0] + '"' + (a ? ' aria-current="page"' : '') + '>' + ic(b[2], 20) + '<span>' + b[1] + '</span></a>';
     }).join('');
   }

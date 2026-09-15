@@ -57,10 +57,10 @@
 
   var BANNERS = [
     { id: 'b1', eyebrow: 'Wellness', title: 'Flu shots at every community this week', msg: 'Book a slot that fits your shift. It takes less than a minute.', cta: 'Book your slot', audience: 'Everyone', start: 'Sep 14', end: 'Sep 20', status: 'Live', art: 'shield', by: 'Elena Torres' },
-    { id: 'b2', eyebrow: 'Benefits', title: 'Open enrolment starts 1 October', msg: 'Review your medical, dental and vision plans before 31 October.', cta: 'See what changes', audience: 'Everyone', start: 'Sep 10', end: 'Oct 31', status: 'Live', art: 'heart-handshake', by: 'Sam Oyelaran' },
+    { id: 'b2', eyebrow: 'Training', title: 'New safe lifting course is live in skyLearn', msg: 'Twenty minutes, finish it on a break. Due by 6 October.', cta: 'Start the course', audience: 'Everyone', start: 'Sep 10', end: 'Oct 6', status: 'Live', art: 'graduation-cap', by: 'Grace Kim' },
     { id: 'b3', eyebrow: 'Maple Grove', title: 'Family BBQ on Saturday, 2 to 5 PM', msg: 'Bring your family to the courtyard. Dining is covering the grill.', cta: 'Sign up to help', audience: 'Maple Grove', start: 'Sep 12', end: 'Sep 19', status: 'Live', art: 'utensils', by: 'Marcus Reid' },
     { id: 'b4', eyebrow: 'Recognition', title: 'Nominate a Caregiver of the Quarter', msg: 'Tell us who went above and beyond. Nominations close 30 September.', cta: 'Nominate someone', audience: 'Frontline', start: 'Sep 15', end: 'Sep 30', status: 'Live', art: 'award', by: 'Elena Torres' },
-    { id: 'b5', eyebrow: 'Payroll', title: 'New paystub portal from 1 November', msg: 'You will get sign-in details by email two weeks before.', cta: 'Read the FAQ', audience: 'Office', start: 'Oct 1', end: 'Nov 15', status: 'Scheduled', art: 'receipt', by: 'Daniel Okafor' }
+    { id: 'b5', eyebrow: 'Community', title: 'Staff appreciation week starts 5 October', msg: 'Breakfast, raffles and a thank-you card from leadership at every community.', cta: 'See the schedule', audience: 'Office', start: 'Oct 1', end: 'Oct 9', status: 'Scheduled', art: 'party-popper', by: 'Elena Torres' }
   ];
 
   var LEARNING = [
@@ -220,21 +220,6 @@
     { id: 'r11', t: 'New starter playbook', d: 'The first two weeks for new team members and their buddies.', cat: 'play', kind: 'Document', ver: 'Jul 7, 2026', review: 'Jul 2027', ack: false, fav: false, owner: 'elena' }
   ];
 
-  var PAY_PERIODS = [
-    ['Aug 16 to Aug 29', 'Sep 4'], ['Aug 30 to Sep 12', 'Sep 18'], ['Sep 13 to Sep 26', 'Oct 2'], ['Sep 27 to Oct 10', 'Oct 16'],
-    ['Oct 11 to Oct 24', 'Oct 30'], ['Oct 25 to Nov 7', 'Nov 13'], ['Nov 8 to Nov 21', 'Nov 25'], ['Nov 22 to Dec 5', 'Dec 11'], ['Dec 6 to Dec 19', 'Dec 23']
-  ];
-  var FAQ = [
-    { q: 'When is my next paycheck?', a: 'Pay is every other Friday. Your next pay date is Friday 18 September, for the period 30 August to 12 September. See the full pay calendar for the year.' },
-    { q: 'How do I see my paystub?', a: 'Paystubs, tax forms and direct deposit details live in the payroll portal. Use View paystubs on the Overview tab. skyEmployee never shows pay amounts or bank details.' },
-    { q: 'What is a shift differential?', a: 'Extra pay per hour for working evenings, nights or weekends. The rates for your community are on the Pay rules tab.' },
-    { q: 'When does overtime start?', a: 'After 40 worked hours in a work week, paid at one and a half times your base rate. PTO hours do not count toward the 40.' },
-    { q: 'How much PTO do I have?', a: 'Your balance is on the Overview tab and comes from the payroll system. It updates the day after each pay date.' },
-    { q: 'Which holidays pay time and a half?', a: 'New Year’s Day, Memorial Day, Independence Day, Labor Day, Thanksgiving and Christmas Day.' },
-    { q: 'How do I change my benefits outside open enrolment?', a: 'Only after a qualifying life event such as marriage, birth or loss of other coverage. Raise a benefits request within 30 days.' },
-    { q: 'Who do I contact about a missing payment?', a: 'Raise a payroll request in skySupport. Payroll replies within one working day.' }
-  ];
-
   var NOTIFS = [
     { ic: 'gift', t: '<b>Marcus Reid</b> awarded you a FreshCart grocery card', time: '4d', go: '#/rewards', unread: true },
     { ic: 'at-sign', t: '<b>Dev Patel</b> mentioned you in a comment', time: '5h', go: '#/home/post/p1', unread: true },
@@ -299,7 +284,7 @@
     BANNERS: BANNERS, LEARNING: LEARNING, SHIFTS: SHIFTS, REQUESTS: REQUESTS, WHOS_ON: WHOS_ON, WHOS_ON_OTHER: WHOS_ON_OTHER,
     BADGES: BADGES, REWARD_TYPES: REWARD_TYPES, AWARDS: AWARDS, ECARD_DESIGNS: ECARD_DESIGNS, ECARDS_RECEIVED: ECARDS_RECEIVED,
     MILESTONES: MILESTONES, POSTS: POSTS, SURVEYS: SURVEYS, RESOURCE_CATS: RESOURCE_CATS, RESOURCES: RESOURCES,
-    PAY_PERIODS: PAY_PERIODS, FAQ: FAQ, NOTIFS: NOTIFS, AUDIT: AUDIT, CODES: CODES, CONTENT: CONTENT, POLLS: POLLS,
+    NOTIFS: NOTIFS, AUDIT: AUDIT, CODES: CODES, CONTENT: CONTENT, POLLS: POLLS,
     REPORTS: REPORTS, VIDEOS: VIDEOS
   };
 })();
