@@ -177,7 +177,7 @@
       var last = i === arr.length - 1;
       return (i ? '<span class="sep">' + ic('chevron-right', 16) + '</span>' : '') + (last ? '<span class="current">' + esc(c[0]) + '</span>' : '<a href="' + c[1] + '">' + esc(c[0]) + '</a>');
     }).join('') + '</div>';
-    var head = o.title ? '<header class="page-header' + (o.action ? ' has-action' : '') + '"><div><h1>' + o.title + '</h1>' + (o.desc ? '<p>' + o.desc + '</p>' : '') + '</div>' + (o.action ? '<div class="page-action">' + o.action + '</div>' : '') + '</header>' : '';
+    var head = o.title ? '<header class="page-header' + (o.action ? ' has-action' : '') + '"><div><h1>' + o.title + '</h1>' + (o.desc ? '<p>' + o.desc + '</p>' : '') + '</div>' + (o.action ? '<div class="page-action ' + (o.actionCls || '') + '">' + o.action + '</div>' : '') + '</header>' : '';
     return crumbs + '<div class="content-body">' + head + (o.tabs || '') + '<div class="page-main">' + o.body + '</div></div>' +
       '<footer class="app-footer">Copyright 2026 <a href="#/home">Skypoint</a>. skyEmployee for ' + esc(D.ORG) + '. Sample data only.</footer>';
   };

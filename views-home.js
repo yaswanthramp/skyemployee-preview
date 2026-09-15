@@ -237,12 +237,16 @@
   };
   A.play = function (el) { var id = el.getAttribute('data-id'); S.playing[id] = !S.playing[id]; el.outerHTML = videoHtml(id, el.querySelector('.video-dur').textContent); };
   A.gal = function (el) { var p = findPost(el.getAttribute('data-id')); S.gallery[p.id] = ((S.gallery[p.id] || 0) + (+el.getAttribute('data-d')) + p.photos) % p.photos; refreshPost(p.id); };
-  A['feed-filter'] = function (el) { S.feed = el.getAttribute('data-f'); var f = document.getElementById('feedList'); document.querySelectorAll('.feed-filters .toggle').forEach(function (t) { var on = t.getAttribute('data-f') === S.feed; t.classList.toggle('is-on', on); t.setAttribute('aria-pressed', on); }); f.innerHTML = feedListHtml(); };
+  A['feed-filter'] = function (el) { S.feed = el.getAttribute('data-f'); S.feedShown = FEED_PAGE; var f = document.getElementById('feedList'); document.querySelectorAll('.feed-filters .toggle').forEach(function (t) { var on = t.getAttribute('data-f') === S.feed; t.classList.toggle('is-on', on); t.setAttribute('aria-pressed', on); }); f.innerHTML = feedListHtml(); };
+  var FEED_PAGE = 5; S.feedShown = FEED_PAGE;
   function feedListHtml() {
     var list = feedPosts();
     if (!list.length) return '<section class="card">' + APP.emptyState('message-square', 'Nothing here yet', 'No ' + S.feed.toLowerCase() + ' in your community feed right now.', btn('Show everything', 'btn-solid', null, 'data-act="feed-filter" data-f="All"')) + '</section>';
-    return list.map(postHtml).join('');
+    var more = list.length - S.feedShown;
+    return list.slice(0, S.feedShown).map(postHtml).join('') +
+      (more > 0 ? '<button class="btn btn-surface is-lg feed-more" data-act="feed-more">' + ic('chevron-down', 16, 'btn-icon') + 'Show ' + Math.min(more, FEED_PAGE) + ' more of ' + more + '</button>' : '<p class="feed-end t-1 text-low">' + ic('circle-check', 14) + ' You are all caught up</p>');
   }
+  A['feed-more'] = function () { S.feedShown += FEED_PAGE; document.getElementById('feedList').innerHTML = feedListHtml(); };
   A['who-reacted'] = function (el) {
     var p = findPost(el.getAttribute('data-id')); var ids = ['dev', 'ana', 'maria', 'lina', 'omar', 'tomas', 'james'];
     APP.dialog({ title: p.likes + ' reactions', body: '<div class="plist">' + ids.map(function (i) { return '<div class="plist-row">' + APP.personLine(i, P(i).title + ' · ' + P(i).loc) + '<span class="text-low">' + ic('thumbs-up', 14) + '</span></div>'; }).join('') + (p.likes > ids.length ? '<p class="t-1 text-low">and ' + (p.likes - ids.length) + ' others</p>' : '') + '</div>' });
@@ -483,22 +487,40 @@
   A['sv-optout'] = function () { S.surveyState.s1.optedOut = true; APP.closeOverlay(); APP.rerender(); APP.toast('You opted out', 'You will not get reminders for this survey.', 'info'); };
 
   /* ---------- home view ---------- */
-  function railHtml() {
-    var me = APP.me(), due = APP.dueItems();
-    var dueCard = '<section class="card rail-card home-due">' + APP.panelHead('Due items', due.length ? due.length + ' need your attention' : null, '<a class="link t-1" href="#/me/due">See all</a>') +
-      (due.length ? '<div class="due-list">' + due.slice(0, 4).map(APP.dueRow).join('') + '</div>' : '<div class="w-empty">' + ic('circle-check', 22) + '<div class="fw-medium">Nothing outstanding</div><div class="t-1 text-low">You are all caught up.</div></div>') + '</section>';
-    var list = me.loc === 'Maple Grove' ? D.WHOS_ON : D.WHOS_ON_OTHER[me.loc] || [];
-    var who = '<section class="card rail-card">' + APP.panelHead("Who's On Today", list.length + ' on shift at ' + esc(me.loc), '<a class="link t-1" href="#/directory/whos-on">View all</a>') +
-      '<div class="who-list">' + list.slice().sort(function (a, b) { return (b.key ? 1 : 0) - (a.key ? 1 : 0); }).slice(0, 5).map(function (w) { var p = P(w.p); return '<div class="who-row">' + APP.personLine(p, esc(p.title) + ' · until ' + w.until) + (w.key ? badge(w.key, 'is-info') : '') + '</div>'; }).join('') + '</div></section>';
-    var shouts = D.POSTS.filter(function (p) { return p.type === 'Shout-out' && !p.removed; }).slice(0, 3);
-    var sh = '<section class="card rail-card">' + APP.panelHead('Shout-outs', 'Latest from ' + esc(me.loc)) + '<div class="shout-list">' + shouts.map(function (p) {
+  S.aroundTab = 'shoutouts';
+  function myWhosOn() { var me = APP.me(); return me.loc === 'Maple Grove' ? D.WHOS_ON : D.WHOS_ON_OTHER[me.loc] || []; }
+  /* "Today": the two things a frontline worker opens the app for, side by side at the top. */
+  function todayCard() {
+    var me = APP.me(), due = APP.dueItems(), shift = myShifts()[0], next = myShifts()[1], list = myWhosOn();
+    var keys = list.filter(function (w) { return w.key && w.p !== me.id; }).slice(0, 2);
+    var left = '<div class="today-shift"><span class="today-label">' + ic('calendar-days', 14) + 'Your shift today</span>' +
+      (S.widget === 'empty' ? '<div class="today-time">Day off</div><div class="today-sub">No shift scheduled today</div>'
+        : '<div class="today-time">' + shift.time + '</div><div class="today-sub">' + esc(shift.where) + (next ? ' · Next: ' + next.d : '') + '</div>') +
+      (keys.length ? '<div class="today-keys">' + keys.map(function (w) { var p = P(w.p); return '<button class="today-key" data-act="profile" data-id="' + p.id + '">' + av(p, 28) + '<span class="pl-text"><span class="pl-sub">' + esc(w.key) + '</span><span class="pl-name">' + esc(p.name) + '</span></span></button>'; }).join('') + '</div>' : '') +
+      '<a class="link today-link" href="#/directory/whos-on">' + ic('users', 14) + list.length + ' on shift at ' + esc(me.loc) + ic('chevron-right', 14) + '</a></div>';
+    var right = '<div class="today-due"><div class="today-due-head"><span class="today-label">' + ic('list-checks', 14) + 'Due next</span>' + (due.length ? '<a class="link t-1" href="#/me/due">See all ' + due.length + '</a>' : '') + '</div>' +
+      (due.length ? '<div class="due-list">' + due.slice(0, 3).map(APP.dueRow).join('') + '</div>' : '<div class="w-empty">' + ic('circle-check', 22) + '<div class="fw-medium">Nothing due</div><div class="t-1 text-low">You are all caught up.</div></div>') + '</div>';
+    return '<section class="card today" aria-label="Today">' + left + right + '</section>';
+  }
+  function aroundCard() {
+    var me = APP.me(), tab = S.aroundTab, body;
+    if (tab === 'coming') body = '<div class="who-list">' + D.MILESTONES.map(function (m) { var p = P(m.p);
+      return '<div class="who-row">' + APP.personLine(p, m.what + ' · ' + m.when + (m.detail ? ' · ' + m.detail : '')) + btn('', 'btn-ghost is-icon is-sm', 'mail', 'aria-label="Send ' + esc(p.name) + ' an e-card" title="Send an e-card" data-act="send-ecard" data-to="' + p.id + '" data-occ="' + (m.what === 'Birthday' ? 'Birthday' : m.what === 'Work anniversary' ? 'Anniversary' : 'Welcome') + '"') + '</div>'; }).join('') + '</div>' +
+      btn('Send an e-card', 'btn-outline', 'mail', 'data-act="send-ecard"');
+    else if (tab === 'videos') body = '<div class="vid-list">' + D.VIDEOS.slice(0, 3).map(function (v, i) {
+      return '<button class="vid-row" data-act="watch-video" data-i="' + i + '"><span class="vid-thumb">' + ic('play', 16) + '<span class="vid-dur">' + v.dur + '</span></span><span class="pl-text"><span class="pl-name">' + esc(v.t) + '</span><span class="pl-sub">' + esc(P(v.by).name) + ' · ' + v.views + ' views</span></span></button>'; }).join('') + '</div>';
+    else body = '<div class="shout-list">' + D.POSTS.filter(function (p) { return p.type === 'Shout-out' && !p.removed; }).slice(0, 3).map(function (p) {
       return '<a class="shout-row" href="#/home/post/' + p.id + '">' + av(P(p.to[0]), 32) + '<span class="pl-text"><span class="pl-name">' + esc(P(p.to[0]).name) + (p.to.length > 1 ? ' +' + (p.to.length - 1) : '') + '</span><span class="pl-sub">from ' + esc(P(p.author).name) + ' · ' + p.time + '</span></span>' + ic('chevron-right', 16) + '</a>'; }).join('') + '</div>' +
-      btn('Give a shout-out', 'btn-outline', 'award', 'data-act="compose" data-type="Shout-out"') + '</section>';
-    var ms = '<section class="card rail-card">' + APP.panelHead('Coming up', 'Celebrate a colleague') + '<div class="who-list">' + D.MILESTONES.map(function (m) { var p = P(m.p);
-      return '<div class="who-row">' + APP.personLine(p, m.what + ' · ' + m.when + (m.detail ? ' · ' + m.detail : '')) + btn('', 'btn-ghost is-icon is-sm', 'mail', 'aria-label="Send ' + esc(p.name) + ' an e-card" title="Send an e-card" data-act="send-ecard" data-to="' + p.id + '" data-occ="' + (m.what === 'Birthday' ? 'Birthday' : m.what === 'Work anniversary' ? 'Anniversary' : 'Welcome') + '"') + '</div>'; }).join('') + '</div></section>';
-    var vids = '<section class="card rail-card">' + APP.panelHead('Featured videos', 'Short picks from the team') + '<div class="vid-list">' + D.VIDEOS.slice(0, 3).map(function (v, i) {
-      return '<button class="vid-row" data-act="watch-video" data-i="' + i + '"><span class="vid-thumb">' + ic('play', 16) + '<span class="vid-dur">' + v.dur + '</span></span><span class="pl-text"><span class="pl-name">' + esc(v.t) + '</span><span class="pl-sub">' + esc(P(v.by).name) + ' · ' + v.views + ' views</span></span></button>'; }).join('') + '</div></section>';
-    return { due: dueCard, rest: who + sh + ms + vids };
+      btn('Give a shout-out', 'btn-outline', 'award', 'data-act="compose" data-type="Shout-out"');
+    return '<section class="card rail-card around" id="aroundCard"><div class="panel-title t-4">Around ' + esc(me.loc) + '</div>' +
+      '<div class="segmented around-tabs" role="tablist">' + [['shoutouts', 'Shout-outs'], ['coming', 'Coming up'], ['videos', 'Videos']].map(function (t) {
+        return '<button class="segmented-item' + (tab === t[0] ? ' is-active' : '') + '" role="tab" aria-selected="' + (tab === t[0]) + '" data-act="around-tab" data-v="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>' + body + '</section>';
+  }
+  A['around-tab'] = function (el) { S.aroundTab = el.getAttribute('data-v'); document.getElementById('aroundCard').outerHTML = aroundCard(); };
+  function whoCard() {
+    var me = APP.me(), list = myWhosOn();
+    return '<section class="card rail-card rail-who">' + APP.panelHead("Who's On Today", list.length + ' on shift at ' + esc(me.loc), '<a class="link t-1" href="#/directory/whos-on">View all</a>') +
+      '<div class="who-list">' + list.slice().sort(function (a, b) { return (b.key ? 1 : 0) - (a.key ? 1 : 0); }).slice(0, 4).map(function (w) { var p = P(w.p); return '<div class="who-row">' + APP.personLine(p, esc(p.title) + ' · until ' + w.until) + (w.key ? badge(w.key, 'is-info') : '') + '</div>'; }).join('') + '</div></section>';
   }
   A['watch-video'] = function (el) {
     var v = D.VIDEOS[+el.getAttribute('data-i')]; S.playing['fv'] = true;
@@ -507,26 +529,23 @@
 
   APP.VIEWS.home = function (r) {
     var me = APP.me(), h = new Date().getHours(), greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    var due = APP.dueItems(), rail = railHtml(), st = S.surveyState.s1;
-    var survey = !st.done && !st.optedOut ? '<div class="survey-strip">' + surveyCard('s1') + '</div>' : '';
     var composer = '<section class="card composer"><div class="composer-row">' + av(me, 36) + '<button class="composer-fake" data-act="compose">Share something with your colleagues</button></div>' +
-      '<div class="composer-quick">' + btn('Photo', 'btn-ghost', 'image', 'data-act="compose"', 'is-sm') + btn('Video', 'btn-ghost', 'video', 'data-act="compose"', 'is-sm') + btn('Shout-out', 'btn-ghost', 'award', 'data-act="compose" data-type="Shout-out"', 'is-sm') +
+      '<div class="composer-quick">' + btn('Photo', 'btn-ghost', 'image', 'data-act="compose"', 'is-sm') + btn('Shout-out', 'btn-ghost', 'award', 'data-act="compose" data-type="Shout-out"', 'is-sm') +
       (APP.canManage() ? btn('Poll', 'btn-ghost', 'vote', 'data-act="compose" data-type="Poll"', 'is-sm') + btn('Announcement', 'btn-ghost', 'megaphone', 'data-act="compose" data-type="Announcement"', 'is-sm') : '') + '</div></section>';
     var filters = '<div class="feed-filters toggle-group" role="toolbar" aria-label="Filter the feed">' + FILTERS.map(function (f) { return '<button class="toggle' + (S.feed === f ? ' is-on' : '') + '" aria-pressed="' + (S.feed === f) + '" data-act="feed-filter" data-f="' + f + '">' + f + '</button>'; }).join('') + '</div>';
-    var body = bannerHtml() + appsHtml() + widgetsHtml() + survey +
-      '<div class="home-grid">' + rail.due +
-      '<div class="home-feed"><div class="feed-head"><h2 class="t-5 fw-bold">Community feed</h2>' + (APP.canManage() ? '<a class="link t-1" href="#/manage/content/moderation">' + ic('flag', 14) + ' ' + D.REPORTS.filter(function (x) { return APP.inScope(x.loc); }).length + ' reported</a>' : '') + '</div>' + composer + filters + '<div id="feedList" class="feed-list">' + feedListHtml() + '</div></div>' +
-      '<aside class="home-rail">' + rail.rest + '</aside></div>';
-    return APP.page({ crumbs: [['Home']], title: greet + ', ' + esc(me.name.split(' ')[0]),
-      desc: 'Tuesday 15 September · ' + esc(me.loc) + (due.length ? ' · <a class="link" href="#/me/due">' + due.length + ' things due</a>' : ''),
-      action: btn('Send an e-card', 'btn-surface', 'mail', 'data-act="send-ecard"') + btn('Give a shout-out', 'btn-soft', 'award', 'data-act="compose" data-type="Shout-out"'), body: body });
+    var body = todayCard() + bannerHtml() + appsHtml() + widgetsHtml() +
+      '<div class="home-grid">' +
+      '<div class="home-feed"><div class="feed-head"><h2 class="t-5 fw-bold">Community feed</h2>' + (APP.canManage() ? '<a class="link t-1" href="#/manage/content/moderation">' + ic('flag', 14) + ' ' + D.REPORTS.filter(function (x) { return APP.inScope(x.loc) && !x.done; }).length + ' reported</a>' : '') + '</div>' + composer + filters + '<div id="feedList" class="feed-list">' + feedListHtml() + '</div></div>' +
+      '<aside class="home-rail">' + whoCard() + aroundCard() + '</aside></div>';
+    return APP.page({ crumbs: [['Home']], title: greet + ', ' + esc(me.name.split(' ')[0]), desc: 'Tuesday 15 September · ' + esc(me.loc),
+      action: btn('Send an e-card', 'btn-surface', 'mail', 'data-act="send-ecard"') + btn('Give a shout-out', 'btn-soft', 'award', 'data-act="compose" data-type="Shout-out"'), actionCls: 'home-actions', body: body });
   };
   APP.AFTER.push(function (r) {
     if (r[0] !== 'home') { clearInterval(timer); return; }
     startCarousel(); bindSwipe();
     if (r[1] === 'post' && r[2]) {
       var el = document.getElementById('post-' + r[2]);
-      if (!el) { S.feed = 'All'; document.getElementById('feedList').innerHTML = feedListHtml(); el = document.getElementById('post-' + r[2]); }
+      if (!el) { S.feed = 'All'; S.feedShown = D.POSTS.length; document.getElementById('feedList').innerHTML = feedListHtml(); el = document.getElementById('post-' + r[2]); }
       if (el) { el.classList.add('is-highlight'); setTimeout(function () { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60); }
     }
   });
