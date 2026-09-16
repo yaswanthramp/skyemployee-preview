@@ -18,7 +18,7 @@
     var on = D.WHOS_ON.concat(D.WHOS_ON_OTHER['Riverside Commons'], D.WHOS_ON_OTHER['Cedar Hills'], D.WHOS_ON_OTHER['Corporate Office']).filter(function (w) { return w.p === p.id; })[0];
     var body = '<div class="profile-top">' + av(p, 72) + '<div><div class="t-5 fw-bold">' + esc(p.name) + '</div><div class="text-low">' + esc(p.title) + '</div>' +
       '<div class="profile-badges">' + (on ? badge('On shift until ' + on.until, 'is-success', 'circle-dot') : badge('Not on shift', 'is-neutral')) + badge(p.type, 'is-neutral') + '</div></div></div>' +
-      (p.id !== me.id ? '<div class="profile-actions">' + btn('Give a shout-out', 'btn-solid', 'award', 'data-act="compose" data-type="Shout-out" data-to="' + p.id + '"') + btn('Send an e-card', 'btn-soft', 'mail', 'data-act="send-ecard" data-to="' + p.id + '"') + '</div>' : '') +
+      (p.id !== me.id ? '<div class="profile-actions">' + btn('Give a shout-out', 'btn-solid', 'award', 'data-act="compose" data-type="Shout-out" data-to="' + p.id + '"') + btn('Send an e-card', 'btn-soft', 'mail', 'data-act="send-ecard" data-to="' + p.id + '"') + btn('Message', 'btn-surface', 'message-square', 'data-act="msg-with" data-id="' + p.id + '"') + '</div>' : '') +
       '<h3 class="section-label">Work details</h3><div class="data-list">' +
       '<span class="dl-label">Department</span><span class="dl-value">' + esc(p.dept) + '</span>' +
       '<span class="dl-label">Location</span><span class="dl-value">' + esc(p.loc) + '</span>' +

@@ -220,12 +220,38 @@
     { id: 'r11', t: 'New starter playbook', d: 'The first two weeks for new team members and their buddies.', cat: 'play', kind: 'Document', ver: 'Jul 7, 2026', review: 'Jul 2027', ack: false, fav: false, owner: 'elena' }
   ];
 
+  /* Private messages. Removed from the scope document in version 2.0 and put
+     back at the customer's request as its own area. */
+  var MSGS = [
+    { id: 'c1', with: ['dev'], archived: false, msgs: [
+      { from: 'dev', t: 'Morning Sarah. Room 14 had a rough night, can you check on her first?', time: '6:58 AM' },
+      { from: 'dev', t: 'Her daughter is visiting at 11 as well.', time: '6:59 AM' },
+      { from: 'me', t: 'On it. I will look in before handover and let you know.', time: '7:04 AM' },
+      { from: 'dev', t: 'Thank you. Also the new lift is in the store cupboard now.', time: '9:12 AM', unread: true },
+      { from: 'dev', t: 'Training video is on Home if you have ten minutes.', time: '9:13 AM', unread: true } ] },
+    { id: 'c2', group: 'West Wing day shift', with: ['ana', 'dev', 'omar', 'maria'], archived: false, msgs: [
+      { from: 'ana', t: 'Reminder: handover moves to 2:45 PM this week while the meeting room is being painted.', time: 'Yesterday' },
+      { from: 'omar', t: 'Noted. I will bring the trolley round early.', time: 'Yesterday' },
+      { from: 'me', t: 'Works for me.', time: 'Yesterday' },
+      { from: 'maria', t: 'Dining will hold lunch service until 2:30 so the corridor is clear.', time: '8:20 AM', unread: true } ] },
+    { id: 'c3', with: ['maria'], archived: false, msgs: [
+      { from: 'maria', t: 'Are you free to swap Saturday? I can cover your Friday evening.', time: 'Mon' },
+      { from: 'me', t: 'Let me check with Ana and come back to you. Swap has to go through skySchedule anyway.', time: 'Mon' },
+      { from: 'maria', t: 'Of course. Thank you for looking.', time: 'Mon' } ] },
+    { id: 'c4', with: ['lina'], archived: false, msgs: [
+      { from: 'lina', t: 'Garden club photos are up on the feed. You are in two of them.', time: 'Sun' },
+      { from: 'me', t: 'Ha, saw them. The tomatoes turned out great.', time: 'Sun' } ] },
+    { id: 'c5', with: ['priya'], archived: true, msgs: [
+      { from: 'priya', t: 'Your October availability is saved. Nothing else needed from you.', time: 'Sep 2' } ] }
+  ];
+
   var NOTIFS = [
     { ic: 'gift', t: '<b>Marcus Reid</b> awarded you a FreshCart grocery card', time: '4d', go: '#/rewards', unread: true },
     { ic: 'at-sign', t: '<b>Dev Patel</b> mentioned you in a comment', time: '5h', go: '#/home/post/p1', unread: true },
     { ic: 'clipboard-list', t: 'September pulse survey closes in 7 days', time: '1d', go: 'survey:s1', unread: true },
     { ic: 'file-check', t: 'Please acknowledge the Infection control policy', time: '2d', go: '#/resources/acknowledge', unread: false },
     { ic: 'mail', t: '<b>Maria Gonzalez</b> sent you an e-card', time: '2d', go: '#/rewards/ecards', unread: false },
+    { ic: 'message-square', t: '<b>Dev Patel</b> sent you a message', time: '3h', go: '#/messages/c1', unread: true },
     { ic: 'megaphone', t: 'New announcement: Welcome to skyEmployee', time: '2h', go: '#/home/post/p1', unread: false }
   ];
 
@@ -284,7 +310,7 @@
     BANNERS: BANNERS, LEARNING: LEARNING, SHIFTS: SHIFTS, REQUESTS: REQUESTS, WHOS_ON: WHOS_ON, WHOS_ON_OTHER: WHOS_ON_OTHER,
     BADGES: BADGES, REWARD_TYPES: REWARD_TYPES, AWARDS: AWARDS, ECARD_DESIGNS: ECARD_DESIGNS, ECARDS_RECEIVED: ECARDS_RECEIVED,
     MILESTONES: MILESTONES, POSTS: POSTS, SURVEYS: SURVEYS, RESOURCE_CATS: RESOURCE_CATS, RESOURCES: RESOURCES,
-    NOTIFS: NOTIFS, AUDIT: AUDIT, CODES: CODES, CONTENT: CONTENT, POLLS: POLLS,
+    MSGS: MSGS, NOTIFS: NOTIFS, AUDIT: AUDIT, CODES: CODES, CONTENT: CONTENT, POLLS: POLLS,
     REPORTS: REPORTS, VIDEOS: VIDEOS
   };
 })();

@@ -94,6 +94,9 @@
   APP.money = function (v) { return '$' + Number(v).toLocaleString('en-US'); };
 
   /* ---------------- role + permissions ---------------- */
+  APP.unreadMsgs = function () {
+    return D.MSGS.reduce(function (n, c) { return n + (c.archived ? 0 : c.msgs.filter(function (m) { return m.unread; }).length); }, 0);
+  };
   APP.role = function () { return D.ROLES.filter(function (r) { return r.key === S.roleKey; })[0]; };
   APP.me = function () { return P(APP.role().person); };
   APP.isAdmin = function () { return APP.role().role === 'Admin'; };
@@ -103,13 +106,13 @@
   APP.inScope = function (loc) { return APP.isAdmin() || loc === 'All' || loc === 'Everyone' || APP.scope().indexOf(loc) >= 0; };
 
   function nav() {
-    var n = [{ items: [['home', 'Home', 'house'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library']] }];
+    var n = [{ items: [['home', 'Home', 'house'], ['messages', 'Messages', 'message-square'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library']] }];
     if (APP.isCtrl()) n.push({ label: 'Manage · ' + APP.scope()[0], items: [['manage/content', 'Content', 'megaphone'], ['manage/surveys', 'Survey results', 'chart-column'], ['manage/acks', 'Acknowledgements', 'file-check']] });
     if (APP.isAdmin()) n.push({ label: 'Administration', items: [['manage/content', 'Content', 'megaphone'], ['manage/surveys', 'Surveys', 'clipboard-list'], ['admin/users', 'Users & organisation', 'user-round-cog'], ['admin/giftcards', 'Gift cards', 'credit-card'], ['admin/recognition', 'Recognition', 'award'], ['admin/resources', 'Resource library', 'folder'], ['admin/settings', 'Settings', 'settings']] });
     return n;
   }
   function allowed(r0, r1) {
-    if (['home', 'directory', 'rewards', 'resources', 'me'].indexOf(r0) >= 0) {
+    if (['home', 'messages', 'directory', 'rewards', 'resources', 'me'].indexOf(r0) >= 0) {
       if (r0 === 'rewards' && (r1 === 'give' || r1 === 'fulfilment')) return APP.canManage();
       return true;
     }
@@ -161,14 +164,16 @@
       if (sec.label) html += '<div class="nav-section">' + esc(sec.label) + '</div>';
       sec.items.forEach(function (it) {
         var active = it[0].indexOf('/') > 0 ? cur === it[0] : (cur0 === it[0]);
-        html += '<a class="nav-item' + (active ? ' is-active' : '') + '" href="#/' + it[0] + '"' + (active ? ' aria-current="page"' : '') + ' title="' + esc(it[1]) + '">' + ic(it[2], 18, 'nav-icon') + '<span class="nav-label">' + esc(it[1]) + '</span></a>';
+        var n = it[0] === 'messages' ? APP.unreadMsgs() : 0;
+        html += '<a class="nav-item' + (active ? ' is-active' : '') + '" href="#/' + it[0] + '"' + (active ? ' aria-current="page"' : '') + ' title="' + esc(it[1]) + '">' + ic(it[2], 18, 'nav-icon') + '<span class="nav-label">' + esc(it[1]) + '</span>' + (n ? '<span class="nav-count">' + n + '</span>' : '') + '</a>';
       });
     });
     document.getElementById('sidebar').innerHTML = html;
-    var bn = [['home', 'Home', 'house'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library'], ['me', 'Me', 'circle-user-round']];
+    var bn = [['home', 'Home', 'house'], ['messages', 'Messages', 'message-square'], ['directory', 'Directory', 'users'], ['rewards', 'Rewards', 'gift'], ['resources', 'Resources', 'library'], ['me', 'Me', 'circle-user-round']];
     document.getElementById('bottomNav').innerHTML = bn.map(function (b) {
       var a = cur0 === b[0];
-      return '<a class="bn-item' + (a ? ' is-active' : '') + '" href="#/' + b[0] + '"' + (a ? ' aria-current="page"' : '') + '>' + ic(b[2], 20) + '<span>' + b[1] + '</span></a>';
+      var n = b[0] === 'messages' ? APP.unreadMsgs() : 0;
+      return '<a class="bn-item' + (a ? ' is-active' : '') + '" href="#/' + b[0] + '"' + (a ? ' aria-current="page"' : '') + '><span class="bn-ic">' + ic(b[2], 20) + (n ? '<span class="bn-count">' + n + '</span>' : '') + '</span><span>' + b[1] + '</span></a>';
     }).join('');
   }
 
@@ -178,6 +183,7 @@
       return (i ? '<span class="sep">' + ic('chevron-right', 16) + '</span>' : '') + (last ? '<span class="current">' + esc(c[0]) + '</span>' : '<a href="' + c[1] + '">' + esc(c[0]) + '</a>');
     }).join('') + '</div>';
     var head = o.title ? '<header class="page-header' + (o.action ? ' has-action' : '') + '"><div><h1>' + o.title + '</h1>' + (o.desc ? '<p>' + o.desc + '</p>' : '') + '</div>' + (o.action ? '<div class="page-action ' + (o.actionCls || '') + '">' + o.action + '</div>' : '') + '</header>' : '';
+    if (o.flush) return crumbs + '<div class="content-body is-flush">' + o.body + '</div>';
     return crumbs + '<div class="content-body">' + head + (o.tabs || '') + '<div class="page-main">' + o.body + '</div></div>' +
       '<footer class="app-footer">Copyright 2026 <a href="#/home">Skypoint</a>. skyEmployee for ' + esc(D.ORG) + '. Sample data only.</footer>';
   };
